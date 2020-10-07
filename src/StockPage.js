@@ -10,7 +10,7 @@ class StockPage extends React.Component {
   }
   
   componentDidMount() {
-    fetch("https://stock.nagymarci.hu/stocks/calculated")
+    fetch(this.props.url)
     .then((res) => Promise.all([res.status, res.json()]))
     .then(([code, stockInfo]) => {
       if (code === 200) {
