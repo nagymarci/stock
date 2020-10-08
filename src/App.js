@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  BrowserRouter as Router,
+  /*BrowserRouter as */Router,
   Switch,
   Route,
   Link
@@ -9,11 +9,24 @@ import StockPage from './StockPage.js';
 import WatchLists from './WatchLists';
 import config from "./config.json";
 import Admin from "./Admin"
+import history from "./history";
+
+import { useAuth0 } from "@auth0/auth0-react";
+
 import './App.css';
 
 function App() {
+  const {isLoading, error} = useAuth0();
+
+  if (error) {
+    return <div>Error {error.message}</div>
+  }
+
+  if (isLoading) {
+    //return <div>Loading</div>
+  }
   return (
-    <Router>
+    <Router history={history}>
       <div>
         <nav>
           <ul>

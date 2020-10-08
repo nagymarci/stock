@@ -26,7 +26,7 @@ class WatchLists extends React.Component {
   render() {
     if (this.state.isFailed) {
       return (
-        <div>Error during query!</div>
+        <div>Error during query watchlist!</div>
       )
     }
     return (

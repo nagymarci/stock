@@ -1,11 +1,9 @@
 import React from 'react';
+import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
 import config from "./config.json";
 
-class Admin extends React.Component
-{
-    render() {
-        return (<WatchListForm />)
-    }
+export const Admin = () => {
+  return (<WatchListForm />)
 }
 
 class WatchListForm extends React.Component {
@@ -48,4 +46,6 @@ class WatchListForm extends React.Component {
       }
 }
 
-export default Admin;
+export default withAuthenticationRequired(Admin, {
+    onRedirecting: () => <div>Loading</div>
+})

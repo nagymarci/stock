@@ -1,3 +1,6 @@
 {
-    "baseUrl": "http://localhost:3100"
+    "baseUrl": "http://localhost:3100",
+    "domain": "dev-stock.eu.auth0.com",
+    "clientId": "3uwoVcWnEkqif5tVY9k0mYR4jfoqslXP",
+    "audience": "https://dev-stock.eu.auth0.com/api/v2/"
   }
