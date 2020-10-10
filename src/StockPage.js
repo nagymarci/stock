@@ -5,7 +5,8 @@ class StockPage extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      isFailed: true
+      isFailed: false,
+      isLoading: true
     }
   }
   
@@ -15,19 +16,33 @@ class StockPage extends React.Component {
     .then(([code, stockInfo]) => {
       if (code === 200) {
         console.log(stockInfo)
-        this.setState({stockData: stockInfo, isFailed: false})
+        this.setState({stockData: stockInfo, isFailed: false, isLoading: false})
       } else {
-        this.setState({isFailed: true})
+        this.setState({isFailed: true, isLoading: false})
       }
     })
   }
 
   render() {
+    if (this.state.isLoading) {
+      return (
+        <div>Loading...</div>
+      )
+    }
+
     if (this.state.isFailed) {
       return (
         <div>Error during query stockpage!</div>
       )
     }
+
+    if (this.state.stockData === undefined || this.state.stockData === null)
+    {
+      return (
+        <div>Server returned no data</div>
+      )
+    }
+
     return (
       <table>
         <tr>
