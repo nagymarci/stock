@@ -23,6 +23,13 @@ class WatchLists extends React.Component {
     })
   }
 
+  handleDelete(profile) {
+    var profiles = this.state.profileNames;
+    var index = profiles.indexOf(profile);
+    profiles.splice(index, 1);
+    this.setState({profileNames: profiles});
+  }
+
   render() {
     if (this.state.isFailed) {
       return (
@@ -35,6 +42,7 @@ class WatchLists extends React.Component {
           return (
             <div>
             <h4>{profile}</h4>
+            <Delete profileName={profile} onDelete={() => this.handleDelete(profile)}/>
             <WatchList profileName={profile}/>
             </div>
           )
@@ -45,16 +53,50 @@ class WatchLists extends React.Component {
 }
 
 class WatchList extends React.Component {
+
+  render() {
+    return (
+      <StockPage url={config.baseUrl + "/profiles/" + this.props.profileName + "/stocks/calculated"}/>
+    )
+  }
+
+}
+
+class Delete extends React.Component {
   constructor(props) {
     super(props)
+    this.state = {
+      name: props.profileName
+    }
+
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  handleSubmit(event) {
+    alert('Delete profile ' + this.state.name);
+    fetch(config.baseUrl + "/profiles/" + this.state.name, {method: "delete"})
+      .then((res) => {
+        if (res.status === 200) {
+          this.props.onDelete();
+        }
+        else {
+          alert("Failed to delete profile, response code " + res.status);
+        }
+      })
+    
+    event.preventDefault();
   }
 
   render() {
     return (
-      <StockPage url={config.baseUrl + "/profiles/" + this.props.profileName + "/stocks/calculated"} />
+      <form onSubmit={this.handleSubmit}>
+        <label>
+          <input name="name" type="hidden" value={this.state.name} />
+        </label>
+        <input type="submit" value="Delete" />
+      </form>
     )
   }
-
 }
 
 export default WatchLists;

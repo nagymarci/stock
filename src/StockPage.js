@@ -20,7 +20,7 @@ class StockPage extends React.Component {
       } else {
         this.setState({isFailed: true, isLoading: false})
       }
-    })
+    });
   }
 
   render() {
