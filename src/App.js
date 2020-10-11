@@ -16,7 +16,12 @@ import { useAuth0 } from "@auth0/auth0-react";
 import './App.css';
 
 function App() {
-  const {isLoading, error} = useAuth0();
+  const {isLoading, error, isAuthenticated, logout} = useAuth0();
+
+  const logoutHandler = () =>
+    logout({
+      returnTo: window.location.origin,
+    });
 
   if (error) {
     return <div>Error {error.message}</div>
@@ -39,6 +44,13 @@ function App() {
             <li>
               <Link to="/admin">Admin</Link>
             </li>
+            {
+              isAuthenticated && 
+              (
+                <li>
+                <button onClick={() => logoutHandler()}>Logout</button>
+                </li>)
+            }
           </ul>
         </nav>
 

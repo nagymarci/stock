@@ -1,55 +1,70 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useAuth0 } from "@auth0/auth0-react";
 import StockPage from './StockPage';
 import config from "./config.json";
 
-class WatchLists extends React.Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      isFailed: true
+const WatchLists = () => {
+
+  const [isFailed, setFailed] = useState(false);
+  const [isLoading, setLoading] = useState(true);
+  const [profileNames, setProfileNames] = useState([]);
+
+  const { isAuthenticated } = useAuth0();
+
+  if (isLoading) {
+  fetch(config.baseUrl + "/profiles")
+  .then((res) => Promise.all([res.status, res.json()]))
+  .then(([code, profiles]) => {
+    if (code === 200) {
+    console.log(profiles)
+    setProfileNames(profiles);
+    setFailed(false);
+    setLoading(false);
+    } else {
+      setFailed(true);
+      setLoading(false);
     }
-  }
+  })
+}
 
-  componentDidMount() {
-    fetch(config.baseUrl + "/profiles")
-    .then((res) => Promise.all([res.status, res.json()]))
-    .then(([code, profileNames]) => {
-      if (code === 200) {
-      console.log(profileNames)
-      this.setState({profileNames: profileNames, isFailed: false})
-      } else {
-      this.setState({isFailed: true})
-      }
-    })
-  }
-
-  handleDelete(profile) {
-    var profiles = this.state.profileNames;
+  const handleDelete = (profile) => {
+    var profiles = profileNames;
     var index = profiles.indexOf(profile);
     profiles.splice(index, 1);
-    this.setState({profileNames: profiles});
+    setProfileNames(profiles);
   }
 
-  render() {
-    if (this.state.isFailed) {
-      return (
-        <div>Error during query watchlist!</div>
-      )
-    }
+  if (isLoading) {
     return (
-      <div className="watchLists">
-        {this.state.profileNames.map((profile) => {
-          return (
-            <div>
-            <h4>{profile}</h4>
-            <Delete profileName={profile} onDelete={() => this.handleDelete(profile)}/>
-            <WatchList profileName={profile}/>
-            </div>
-          )
-        })}
-      </div>
+      <div>Loading...</div>
     )
   }
+
+  if (isFailed) {
+    return (
+      <div>Error during query watchlist!</div>
+    )
+  }
+
+  console.log(isAuthenticated)
+
+  return (
+    <div className="watchLists">
+      {profileNames.map((profile) => {
+        return (
+          <div>
+          <h4>{profile}</h4>
+          {
+            //console.log(isAuthenticated) &&
+            isAuthenticated && 
+            (<Delete profileName={profile} onDelete={() => handleDelete(profile)}/>)
+          }
+          <WatchList profileName={profile}/>
+          </div>
+        )
+      })}
+    </div>
+  )
 }
 
 class WatchList extends React.Component {
