@@ -32,6 +32,7 @@ const WatchLists = () => {
     var index = profiles.indexOf(profile);
     profiles.splice(index, 1);
     setProfileNames(profiles);
+    setLoading(true);
   }
 
   if (isLoading) {
