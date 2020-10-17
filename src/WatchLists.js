@@ -9,7 +9,7 @@ const WatchLists = () => {
   const [isLoading, setLoading] = useState(true);
   const [profileNames, setProfileNames] = useState([]);
 
-  const { isAuthenticated } = useAuth0();
+  const { isAuthenticated, getAccessTokenSilently } = useAuth0();
 
   if (isLoading) {
   fetch(config.baseUrl + "/profiles")
@@ -27,7 +27,17 @@ const WatchLists = () => {
   })
 }
 
-  const handleDelete = (profile) => {
+  const handleDelete = async (profile) => {
+    const token = await getAccessTokenSilently({
+      audience: config.apiAudience,
+      scope: "write:profiles"
+    });
+    await fetch(config.baseUrl + "/profiles/" + profile, {
+      method: "delete", 
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
     var profiles = profileNames;
     var index = profiles.indexOf(profile);
     profiles.splice(index, 1);
@@ -90,16 +100,7 @@ class Delete extends React.Component {
 
   handleSubmit(event) {
     alert('Delete profile ' + this.state.name);
-    fetch(config.baseUrl + "/profiles/" + this.state.name, {method: "delete"})
-      .then((res) => {
-        if (res.status === 200) {
-          this.props.onDelete();
-        }
-        else {
-          alert("Failed to delete profile, response code " + res.status);
-        }
-      })
-    
+    this.props.onDelete();    
     event.preventDefault();
   }
 
