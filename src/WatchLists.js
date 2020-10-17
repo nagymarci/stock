@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { useAuth0 } from "@auth0/auth0-react";
 import StockPage from './StockPage';
 import config from "./config.json";
+import Alert from 'react-bootstrap/Alert';
 
 const WatchLists = () => {
 
   const [isFailed, setFailed] = useState(false);
   const [isLoading, setLoading] = useState(true);
   const [profileNames, setProfileNames] = useState([]);
+  const [deleteSuccess, setDeleteSuccess] = useState(false);
 
   const { isAuthenticated, getAccessTokenSilently } = useAuth0();
 
@@ -43,6 +45,7 @@ const WatchLists = () => {
     profiles.splice(index, 1);
     setProfileNames(profiles);
     setLoading(true);
+    setDeleteSuccess(true);
   }
 
   if (isLoading) {
@@ -61,6 +64,11 @@ const WatchLists = () => {
 
   return (
     <div className="watchLists">
+      {deleteSuccess && (
+        <Alert variant="success">
+          Profile successfully deleted
+        </Alert>
+      )}
       {profileNames.map((profile) => {
         return (
           <div>
