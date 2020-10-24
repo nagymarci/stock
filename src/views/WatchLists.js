@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
 import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
-import {Stock} from './StockPage';
-import config from "./config.json";
+import config from "../config.json";
 import Alert from 'react-bootstrap/Alert';
-import Table from 'react-bootstrap/Table';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import Button from 'react-bootstrap/Button';
-import WatchlistForm from './components/WatchlistForm'
+import WatchlistForm from '../components/WatchlistForm'
+import DeleteButton from '../components/DeleteButton'
+import WatchList from '../components/WatchList'
 
 export const WatchLists = () => {
 
@@ -135,7 +134,7 @@ export const WatchLists = () => {
               <Col>
               {
                 isAuthenticated && 
-                (<Delete onDelete={() => handleDelete(watchlist.id)}/>)
+                (<DeleteButton onDelete={() => handleDelete(watchlist.id)}/>)
               }
             </Col>
           </Row>
@@ -146,87 +145,6 @@ export const WatchLists = () => {
         )
       })}
     </div>
-  )
-}
-
-const WatchList = (props) => {
-
-  const [isFailed, setFailed] = useState(false);
-  const [isLoading, setLoading] = useState(true);
-  const [stockData, setStockData] = useState([]);
-
-  const { getAccessTokenSilently } = useAuth0();
-
-  if (isLoading) {
-    getAccessTokenSilently({
-      audience: config.apiAudience,
-      scope: "write:profiles"
-    }).then((token) => {
-      fetch(config.baseUrl + "/watchlist/" + props.id + "/calculated", {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-      .then((res) => Promise.all([res.status, res.json()]))
-      .then(([code, stockInfo]) => {
-        if (code === 200) {
-          setStockData(stockInfo);
-          setFailed(false)
-          setLoading(false)
-        } else {
-          setFailed(true)
-          setLoading(false)
-        }
-      })
-    })
-  }
-
-  if (isLoading) {
-      return (
-        <div>Loading...</div>
-      )
-    }
-
-    if (isFailed) {
-      return (
-        <div>Error during query stockpage!</div>
-      )
-    }
-
-    if (stockData === undefined || stockData === null)
-    {
-      return (
-        <div>Server returned no data</div>
-      )
-    }
-
-    return (
-      <Table bordered>
-        <thead>
-          <tr>
-            <th>Symbol</th>
-            <th>Price</th>
-            <th>Dividend Yield</th>
-          </tr>
-        </thead>
-        <tbody>
-        {stockData.map((stock) => {
-          return (
-            <Stock key={stock.ticker} stockData={stock}/>
-          )
-        })}
-        </tbody>
-      </Table>
-    )
-
-}
-
-const Delete = (props) => {
-
-  return (
-    <Button variant="danger" onClick={props.onDelete}>
-      Delete
-    </Button>
   )
 }
 

@@ -5,7 +5,7 @@ import {
   Route
 } from "react-router-dom";
 import StockPage from './StockPage.js';
-import WatchLists from './WatchLists';
+import WatchLists from './views/WatchLists';
 import config from "./config.json";
 import Admin from "./Admin"
 import history from "./history";
