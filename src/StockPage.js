@@ -15,7 +15,6 @@ class StockPage extends React.Component {
     .then((res) => Promise.all([res.status, res.json()]))
     .then(([code, stockInfo]) => {
       if (code === 200) {
-        console.log(stockInfo)
         this.setState({stockData: stockInfo, isFailed: false, isLoading: false})
       } else {
         this.setState({isFailed: true, isLoading: false})
@@ -60,7 +59,7 @@ class StockPage extends React.Component {
   }
 }
 
-class Stock extends React.Component {
+export class Stock extends React.Component {
     constructor(props) {
       super(props)
       this.state = {
@@ -74,8 +73,6 @@ class Stock extends React.Component {
           <div>Error during query!</div>
         )
       }
-      console.log(this.state.priceColor)
-      console.log(this.state.price)
       return (
         <tr>
           <td>{this.state.ticker}</td>
@@ -89,7 +86,6 @@ class Stock extends React.Component {
   class Price extends React.Component {
     constructor(props) {
       super(props)
-      console.log(props)
       this.state = {
         color: props.color,
         price: props.price,
@@ -98,8 +94,6 @@ class Stock extends React.Component {
     }
   
     render() {
-      console.log(this.state.color)
-      console.log(this.state.price)
       let optInText = "Opt-in price: " + formatNumber(this.state.optInPrice)
       let color = this.state.color === "blank" ? "white" : this.state.color
       return (
@@ -114,7 +108,6 @@ class Stock extends React.Component {
   class Dividend extends React.Component {
     constructor(props) {
       super(props)
-      console.log(props)
       this.state = {
         color: props.color,
         divYield: props.divYield,

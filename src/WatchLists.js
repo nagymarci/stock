@@ -1,51 +1,97 @@
 import React, { useState } from 'react';
-import { useAuth0 } from "@auth0/auth0-react";
-import StockPage from './StockPage';
+import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
+import {Stock} from './StockPage';
 import config from "./config.json";
 import Alert from 'react-bootstrap/Alert';
+import Table from 'react-bootstrap/Table';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import Button from 'react-bootstrap/Button';
+import WatchlistForm from './components/WatchlistForm'
 
-const WatchLists = () => {
+export const WatchLists = () => {
 
   const [isFailed, setFailed] = useState(false);
   const [isLoading, setLoading] = useState(true);
-  const [profileNames, setProfileNames] = useState([]);
+  const [currentWatchlists, setWatchlists] = useState([]);
   const [deleteSuccess, setDeleteSuccess] = useState(false);
+  const [createSuccess, setCreateSuccess] = useState(false);
+  const [createFailure, setCreateFailure] = useState(false);
 
   const { isAuthenticated, getAccessTokenSilently } = useAuth0();
 
   if (isLoading) {
-  fetch(config.baseUrl + "/profiles")
-  .then((res) => Promise.all([res.status, res.json()]))
-  .then(([code, profiles]) => {
-    if (code === 200) {
-    console.log(profiles)
-    setProfileNames(profiles);
-    setFailed(false);
-    setLoading(false);
-    } else {
-      setFailed(true);
-      setLoading(false);
-    }
-  })
-}
+    getAccessTokenSilently({
+      audience: config.apiAudience,
+      scope: "write:profiles"
+    }).then((token) => {
+      fetch(config.baseUrl + "/watchlist", {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      .then((res) => Promise.all([res.status, res.json()]))
+      .then(([code, watchlists]) => {
+        if (code === 200) {
+          setWatchlists(watchlists);
+          setFailed(false);
+          setLoading(false);
+        } else {
+          setFailed(true);
+          setLoading(false);
+        }
+      })
+    })
+    
+  }
 
-  const handleDelete = async (profile) => {
+  const handleDelete = async (id) => {
     const token = await getAccessTokenSilently({
       audience: config.apiAudience,
       scope: "write:profiles"
     });
-    await fetch(config.baseUrl + "/profiles/" + profile, {
+    await fetch(config.baseUrl + "/watchlist/" + id, {
       method: "delete", 
       headers: {
         Authorization: `Bearer ${token}`
       }
     })
-    var profiles = profileNames;
-    var index = profiles.indexOf(profile);
-    profiles.splice(index, 1);
-    setProfileNames(profiles);
-    setLoading(true);
+    var watchlists = currentWatchlists;
+    var index = watchlists.findIndex(x => x.id === id)
+    watchlists.splice(index, 1);
+    setWatchlists(watchlists);
+    setLoading(false);
     setDeleteSuccess(true);
+  }
+
+  const handleCreation = async (name, stocks) => {
+    let body = {stocks: stocks.split(' '), name: name}
+    await getAccessTokenSilently({
+      audience: config.apiAudience,
+      scope: "write:profiles"
+    }).then((token) => fetch(config.baseUrl + "/watchlist", {
+        method: "POST",
+        body: JSON.stringify(body),
+        headers: {
+          Authorization: `Bearer ${token}`
+        }})
+    ).then((res) => Promise.all([res.status, res.json()])
+    ).then(([code, watchlist]) => {
+        if (code === 201) {
+          alert("success")
+          let watchlists = currentWatchlists != null ? currentWatchlists : [];
+          watchlists.push(watchlist);
+          setWatchlists(watchlists);
+          setLoading(false);
+          setDeleteSuccess(false);
+          setCreateSuccess(true);
+        }
+        else {
+          alert("failure")
+          setCreateFailure(true);
+        }
+    });
   }
 
   if (isLoading) {
@@ -60,68 +106,130 @@ const WatchLists = () => {
     )
   }
 
-  console.log(isAuthenticated)
-
   return (
     <div className="watchLists">
       {deleteSuccess && (
         <Alert variant="success">
-          Profile successfully deleted
+          Watchlist successfully deleted
         </Alert>
       )}
-      {profileNames.map((profile) => {
+      {createSuccess && (
+        <Alert variant="success">
+          Watchlist successfully created
+        </Alert>
+      )}
+      {createFailure && (
+        <Alert variant="failure">
+          Watchlist creation failued
+        </Alert>
+      )}
+      <WatchlistForm visible={currentWatchlists == null || currentWatchlists.length < 1} onCreation={handleCreation}/>
+      {currentWatchlists == null && (<div>You have no Watchlist! Create one above!</div>)}
+      {currentWatchlists != null && currentWatchlists.map((watchlist) => {
         return (
-          <div>
-          <h4>{profile}</h4>
-          {
-            //console.log(isAuthenticated) &&
-            isAuthenticated && 
-            (<Delete profileName={profile} onDelete={() => handleDelete(profile)}/>)
-          }
-          <WatchList profileName={profile}/>
-          </div>
+          <Container key={watchlist.id}>
+            <Row>
+              <Col>
+                <h4>{watchlist.name}</h4>
+              </Col>
+              <Col>
+              {
+                isAuthenticated && 
+                (<Delete onDelete={() => handleDelete(watchlist.id)}/>)
+              }
+            </Col>
+          </Row>
+          <Row>
+            <WatchList id={watchlist.id}/>
+          </Row>
+          </Container>
         )
       })}
     </div>
   )
 }
 
-class WatchList extends React.Component {
+const WatchList = (props) => {
 
-  render() {
-    return (
-      <StockPage url={config.baseUrl + "/profiles/" + this.props.profileName + "/stocks/calculated"}/>
-    )
+  const [isFailed, setFailed] = useState(false);
+  const [isLoading, setLoading] = useState(true);
+  const [stockData, setStockData] = useState([]);
+
+  const { getAccessTokenSilently } = useAuth0();
+
+  if (isLoading) {
+    getAccessTokenSilently({
+      audience: config.apiAudience,
+      scope: "write:profiles"
+    }).then((token) => {
+      fetch(config.baseUrl + "/watchlist/" + props.id + "/calculated", {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      .then((res) => Promise.all([res.status, res.json()]))
+      .then(([code, stockInfo]) => {
+        if (code === 200) {
+          setStockData(stockInfo);
+          setFailed(false)
+          setLoading(false)
+        } else {
+          setFailed(true)
+          setLoading(false)
+        }
+      })
+    })
   }
 
-}
-
-class Delete extends React.Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      name: props.profileName
+  if (isLoading) {
+      return (
+        <div>Loading...</div>
+      )
     }
 
-    this.handleSubmit = this.handleSubmit.bind(this);
-  }
+    if (isFailed) {
+      return (
+        <div>Error during query stockpage!</div>
+      )
+    }
 
-  handleSubmit(event) {
-    alert('Delete profile ' + this.state.name);
-    this.props.onDelete();    
-    event.preventDefault();
-  }
+    if (stockData === undefined || stockData === null)
+    {
+      return (
+        <div>Server returned no data</div>
+      )
+    }
 
-  render() {
     return (
-      <form onSubmit={this.handleSubmit}>
-        <label>
-          <input name="name" type="hidden" value={this.state.name} />
-        </label>
-        <input type="submit" value="Delete" />
-      </form>
+      <Table bordered>
+        <thead>
+          <tr>
+            <th>Symbol</th>
+            <th>Price</th>
+            <th>Dividend Yield</th>
+          </tr>
+        </thead>
+        <tbody>
+        {stockData.map((stock) => {
+          return (
+            <Stock key={stock.ticker} stockData={stock}/>
+          )
+        })}
+        </tbody>
+      </Table>
     )
-  }
+
 }
 
-export default WatchLists;
+const Delete = (props) => {
+
+  return (
+    <Button variant="danger" onClick={props.onDelete}>
+      Delete
+    </Button>
+  )
+}
+
+export default withAuthenticationRequired(WatchLists, {
+    onRedirecting: () => <div>Loading</div>
+})
