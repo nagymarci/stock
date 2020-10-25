@@ -83,52 +83,52 @@ export class Stock extends React.Component {
     }
   }
   
-  class Price extends React.Component {
-    constructor(props) {
-      super(props)
-      this.state = {
-        color: props.color,
-        price: props.price,
-        optInPrice: props.optInPrice
-      }
-    }
-  
-    render() {
-      let optInText = "Opt-in price: " + formatNumber(this.state.optInPrice)
-      let color = this.state.color === "blank" ? "white" : this.state.color
-      return (
-        <td bgcolor={color} data-tip={optInText}>
-          {formatNumber(this.state.price)}
-          <ReactTooltip />
-        </td>
-      )
-    }
-  }
-  
-  class Dividend extends React.Component {
-    constructor(props) {
-      super(props)
-      this.state = {
-        color: props.color,
-        divYield: props.divYield,
-        optInYield: props.optInYield
-      }
-    }
-  
-    render() {
-      let optInText = "Opt-in yield: " + formatNumber(this.state.optInYield)
-      let color = this.state.color === "blank" ? "white" : this.state.color
-      return (
-        <td bgcolor={color} data-tip={optInText}>
-          {formatNumber(this.state.divYield)}
-          <ReactTooltip />
-        </td>
-      )
+class Price extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      color: props.color,
+      price: props.price,
+      optInPrice: props.optInPrice
     }
   }
 
-  function formatNumber(value) {
-      return Number.parseFloat(value).toFixed(2)
+  render() {
+    let optInText = "Opt-in price: " + formatNumber(this.state.optInPrice)
+    let color = this.state.color === "blank" ? "white" : this.state.color
+    return (
+      <td bgcolor={color} data-tip={optInText}>
+        {formatNumber(this.state.price)}
+        <ReactTooltip />
+      </td>
+    )
+  }
+}
+
+class Dividend extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      color: props.color,
+      divYield: props.divYield,
+      optInYield: props.optInYield
+    }
   }
 
-  export default StockPage
+  render() {
+    let optInText = "Opt-in yield: " + formatNumber(this.state.optInYield)
+    let color = this.state.color === "blank" ? "white" : this.state.color
+    return (
+      <td bgcolor={color} data-tip={optInText}>
+        {formatNumber(this.state.divYield)}
+        <ReactTooltip />
+      </td>
+    )
+  }
+}
+
+function formatNumber(value) {
+    return Number.parseFloat(value).toFixed(2)
+}
+
+export default StockPage
