@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Form, Button, Collapse, Container } from "react-bootstrap";
+import { Form, Button, Collapse, Container, Row, Col } from "react-bootstrap";
 
 const WatchListForm = (props) => {
 
@@ -35,9 +35,22 @@ const WatchListForm = (props) => {
           <Form.Label>Stocks</Form.Label>
           <Form.Control name="stocks" type="text" value={state.stocks} onChange={handleChange} />
         </Form.Group>
-        <Button variant="primary" type="submit">
-          Create Watchlist
-        </Button>
+        <Container>
+          <Row>
+            <Col>
+              <Button variant="primary" type="submit">
+                Create Watchlist
+              </Button>
+            </Col>
+            {visible && (
+              <Col>
+                <Button variant="outline-secondary" onClick={() => setVisible(!visible)}>
+                  Cancel
+                </Button>
+              </Col>
+            )}
+          </Row>
+        </Container>
       </Form>
       </Collapse>
     </Container>

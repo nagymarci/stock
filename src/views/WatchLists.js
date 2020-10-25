@@ -80,45 +80,65 @@ export const WatchLists = () => {
   }
 
   return (
-    <div className="watchLists">
+    <Container className="watchLists">
       {deleteSuccess && (
-        <Alert variant="success">
-          Watchlist successfully deleted
-        </Alert>
+        <Row>
+        <Col>
+          <Alert variant="success">
+            Watchlist successfully deleted
+          </Alert>
+        </Col>
+        </Row>
       )}
       {createSuccess && (
-        <Alert variant="success">
-          Watchlist successfully created
-        </Alert>
+        <Row>
+        <Col>
+          <Alert variant="success">
+            Watchlist successfully created
+          </Alert>
+        </Col>
+        </Row>
       )}
       {createFailure && (
-        <Alert variant="failure">
-          Watchlist creation failued
-        </Alert>
+        <Row>
+        <Col>
+          <Alert variant="failure">
+            Watchlist creation failued
+          </Alert>
+        </Col>
+        </Row>
       )}
-      <WatchlistForm visible={currentWatchlists == null || currentWatchlists.length < 1} onCreation={handleCreation}/>
-      {currentWatchlists == null && (<div>You have no Watchlist! Create one above!</div>)}
-      {currentWatchlists != null && currentWatchlists.map((watchlist) => {
-        return (
-          <Container key={watchlist.id}>
-            <Row>
-              <Col>
-                <h4>{watchlist.name}</h4>
+      <Row xs={10} lg={60}>
+        <Col>
+        <WatchlistForm visible={currentWatchlists == null || currentWatchlists.length < 1} onCreation={handleCreation}/>
+        </Col>
+      </Row>
+      <Row xs={10} lg={60}>
+        <Col>
+        {currentWatchlists == null && (<div>You have no Watchlist! Create one above!</div>)}
+        {currentWatchlists != null && currentWatchlists.map((watchlist) => {
+          return (
+            <Container key={watchlist.id}>
+              <Row>
+                <Col>
+                  <h4>{watchlist.name}</h4>
+                </Col>
+                <Col>
+                {
+                  isAuthenticated && 
+                  (<DeleteButton onDelete={() => handleDelete(watchlist.id)}/>)
+                }
               </Col>
-              <Col>
-              {
-                isAuthenticated && 
-                (<DeleteButton onDelete={() => handleDelete(watchlist.id)}/>)
-              }
-            </Col>
-          </Row>
-          <Row>
-            <WatchList id={watchlist.id}/>
-          </Row>
-          </Container>
-        )
-      })}
-    </div>
+            </Row>
+            <Row>
+              <WatchList id={watchlist.id}/>
+            </Row>
+            </Container>
+          )
+        })}
+        </Col>
+      </Row>
+    </Container>
   )
 }
 
