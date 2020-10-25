@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { useAuth0 } from "@auth0/auth0-react";
 
 import {Stock} from '../StockPage';
-import config from "../config.json";
 import Table from 'react-bootstrap/Table';
+import { getCalculatedWatchlist } from '../api';
 
 const WatchList = (props) => {
 
@@ -14,17 +14,9 @@ const WatchList = (props) => {
 
   const { getAccessTokenSilently } = useAuth0();
 
-  if (isLoading) {
-    getAccessTokenSilently({
-      audience: config.apiAudience,
-      scope: "write:profiles"
-    }).then((token) => {
-      fetch(config.baseUrl + "/watchlist/" + props.id + "/calculated", {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-      .then((res) => Promise.all([res.status, res.json()]))
+  useEffect(() => {
+    if (isLoading) {
+      getCalculatedWatchlist(getAccessTokenSilently, props.id)
       .then(([code, stockInfo]) => {
         if (code === 200) {
           setStockData(stockInfo);
@@ -34,9 +26,9 @@ const WatchList = (props) => {
           setFailed(true)
           setLoading(false)
         }
-      })
-    })
-  }
+      });
+    }
+  }, [isLoading, getAccessTokenSilently, props.id]);  
 
   if (isLoading) {
       return (

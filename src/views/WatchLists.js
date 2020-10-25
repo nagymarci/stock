@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
-import config from "../config.json";
 import Alert from 'react-bootstrap/Alert';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+
 import WatchlistForm from '../components/WatchlistForm'
 import DeleteButton from '../components/DeleteButton'
 import WatchList from '../components/WatchList'
+
+import {getAllWatchlist, deleteWatchlist, createWatchlist} from '../api'
 
 export const WatchLists = () => {
 
@@ -20,17 +22,9 @@ export const WatchLists = () => {
 
   const { isAuthenticated, getAccessTokenSilently } = useAuth0();
 
-  if (isLoading) {
-    getAccessTokenSilently({
-      audience: config.apiAudience,
-      scope: "write:profiles"
-    }).then((token) => {
-      fetch(config.baseUrl + "/watchlist", {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-      .then((res) => Promise.all([res.status, res.json()]))
+  useEffect(() => {
+    if (isLoading) {
+      getAllWatchlist(getAccessTokenSilently)
       .then(([code, watchlists]) => {
         if (code === 200) {
           setWatchlists(watchlists);
@@ -40,49 +34,29 @@ export const WatchLists = () => {
           setFailed(true);
           setLoading(false);
         }
-      })
-    })
-    
-  }
+      });
+    }
+  }, [isLoading, getAccessTokenSilently]);
 
   const handleDelete = async (id) => {
-    const token = await getAccessTokenSilently({
-      audience: config.apiAudience,
-      scope: "write:profiles"
-    });
-    await fetch(config.baseUrl + "/watchlist/" + id, {
-      method: "delete", 
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
+    deleteWatchlist(getAccessTokenSilently, id)
+    .then(() => {
+      var watchlists = currentWatchlists;
+      var index = watchlists.findIndex(x => x.id === id)
+      watchlists.splice(index, 1);
+      setWatchlists(watchlists);
+      setDeleteSuccess(true);
     })
-    var watchlists = currentWatchlists;
-    var index = watchlists.findIndex(x => x.id === id)
-    watchlists.splice(index, 1);
-    setWatchlists(watchlists);
-    setLoading(false);
-    setDeleteSuccess(true);
   }
 
   const handleCreation = async (name, stocks) => {
     let body = {stocks: stocks.split(' '), name: name}
-    await getAccessTokenSilently({
-      audience: config.apiAudience,
-      scope: "write:profiles"
-    }).then((token) => fetch(config.baseUrl + "/watchlist", {
-        method: "POST",
-        body: JSON.stringify(body),
-        headers: {
-          Authorization: `Bearer ${token}`
-        }})
-    ).then((res) => Promise.all([res.status, res.json()])
-    ).then(([code, watchlist]) => {
+    createWatchlist(getAccessTokenSilently, body)
+      .then(([code, watchlist]) => {
         if (code === 201) {
-          alert("success")
           let watchlists = currentWatchlists != null ? currentWatchlists : [];
           watchlists.push(watchlist);
           setWatchlists(watchlists);
-          setLoading(false);
           setDeleteSuccess(false);
           setCreateSuccess(true);
         }
