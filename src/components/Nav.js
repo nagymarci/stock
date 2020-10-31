@@ -20,7 +20,7 @@ const NavBar = () => {
         <Nav.Link href="/watchlist">WatchLists</Nav.Link>
       </Nav.Item>
       <Nav.Item>
-        <Nav.Link href="/admin">Admin</Nav.Link>
+        <Nav.Link href="/profile">My Profile</Nav.Link>
       </Nav.Item>
       {
         isAuthenticated && 

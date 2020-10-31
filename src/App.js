@@ -7,7 +7,6 @@ import {
 import StockPage from './StockPage.js';
 import WatchLists from './views/WatchLists';
 import config from "./config.json";
-import Admin from "./Admin"
 import history from "./history";
 import NavBar from "./components/Nav"
 
@@ -15,6 +14,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 
 import './App.css';
 import Container from 'react-bootstrap/Container';
+import { Profile } from './views/Profile.js';
 
 function App() {
   const {isLoading, error} = useAuth0();
@@ -34,8 +34,8 @@ function App() {
             renders the first one that matches the current URL. */}
         <Container>
           <Switch>
-            <Route path="/admin">
-              <Admin />
+            <Route path="/profile">
+              <Profile />
             </Route>
             <Route path="/watchlist">
               <WatchLists />

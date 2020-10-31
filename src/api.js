@@ -51,3 +51,36 @@ export async function getCalculatedWatchlist(tokenFunction, id) {
       }))
   .then((res) => Promise.all([res.status, res.json()]));
 }
+
+export async function getProfile(tokenFunction, userId) {
+  return tokenFunction({
+    audience: config.apiAudience,
+    scope: "write:profiles"
+  })
+  .then((token) => fetch(config.baseUrl + "/userprofile/" + userId, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    }))
+  .then((res) => Promise.all([res.status, res.json()]));
+}
+
+export async function saveProfile(tokenFunction, profile) {
+  return tokenFunction({
+    audience: config.apiAudience,
+    scope: "write:profiles"
+  })
+  .then((token) => fetch(config.baseUrl + "/userprofile", {
+    method: "POST",
+    body: JSON.stringify(profile),  
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  }))
+  .then((res) => Promise.all([res.status, (res) => {
+    if (res.status === 201) {
+      return null
+    }
+    res.json()
+  }]));
+}

@@ -108,12 +108,12 @@ export const WatchLists = () => {
         </Col>
         </Row>
       )}
-      <Row xs={10} lg={60}>
+      <Row xs={10} lg={60} className="mt-5">
         <Col>
         <WatchlistForm visible={currentWatchlists == null || currentWatchlists.length < 1} onCreation={handleCreation}/>
         </Col>
       </Row>
-      <Row xs={10} lg={60}>
+      <Row xs={10} lg={60} className="mt-3">
         <Col>
         {currentWatchlists == null && (<div>You have no Watchlist! Create one above!</div>)}
         {currentWatchlists != null && currentWatchlists.map((watchlist) => {
@@ -130,7 +130,7 @@ export const WatchLists = () => {
                 }
               </Col>
             </Row>
-            <Row>
+            <Row className="mt-2">
               <WatchList id={watchlist.id}/>
             </Row>
             </Container>
