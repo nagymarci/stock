@@ -4,9 +4,7 @@ import {
   Switch,
   Route
 } from "react-router-dom";
-import StockPage from './StockPage.js';
 import WatchLists from './views/WatchLists';
-import config from "./config.json";
 import history from "./history";
 import NavBar from "./components/Nav"
 
@@ -41,7 +39,7 @@ function App() {
               <WatchLists />
             </Route>
             <Route path="/">
-              <StockPage url={config.baseUrl + "/stocks/calculated"}/>
+              <div>Coming soon! Try the other menu meanwhile :)</div>
             </Route>
           </Switch>
         </Container>
