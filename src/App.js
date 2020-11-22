@@ -13,6 +13,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import './App.css';
 import Container from 'react-bootstrap/Container';
 import { Profile } from './views/Profile.js';
+import Home from './views/Home'
 
 function App() {
   const {isLoading, error} = useAuth0();
@@ -39,7 +40,7 @@ function App() {
               <WatchLists />
             </Route>
             <Route path="/">
-              <div>Coming soon! Try the other menu meanwhile :)</div>
+              <Home />
             </Route>
           </Switch>
         </Container>

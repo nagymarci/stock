@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 
 import { useAuth0 } from "@auth0/auth0-react";
 
-import {Stock} from '../StockPage';
-import Table from 'react-bootstrap/Table';
+import StockTable from './StockTable';
 import { getCalculatedWatchlist } from '../api';
+import { Container } from 'react-bootstrap';
 
 const WatchList = (props) => {
 
@@ -50,22 +50,12 @@ const WatchList = (props) => {
     }
 
     return (
-      <Table bordered>
-        <thead>
-          <tr>
-            <th>Symbol</th>
-            <th>Price</th>
-            <th>Dividend Yield</th>
-          </tr>
-        </thead>
-        <tbody>
-        {stockData.map((stock) => {
-          return (
-            <Stock key={stock.ticker} stockData={stock}/>
-          )
-        })}
-        </tbody>
-      </Table>
+      <Container>
+      {
+        stockData &&
+        <StockTable stockData={stockData} />
+      }
+      </Container>
     )
 
 }

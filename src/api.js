@@ -84,3 +84,24 @@ export async function saveProfile(tokenFunction, profile) {
     res.json()
   }]));
 }
+
+export async function getAllCalculatedAuth(tokenFunction, userId) {
+  return tokenFunction({
+    audience: config.apiAudience,
+    scope: "write:profiles"
+  })
+  .then((token) => fetch(config.baseUrl + "/all/" + userId, {
+    method: "GET", 
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  }))
+  .then((res) => Promise.all([res.status, res.json()]));
+}
+
+export async function getAllCalculated() {
+  return fetch(config.baseUrl + "/all", {
+    method: "GET"
+  })
+  .then((res) => Promise.all([res.status, res.json()]));
+}

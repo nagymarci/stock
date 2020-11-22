@@ -1,60 +1,33 @@
 import React from 'react';
 import ReactTooltip from 'react-tooltip';
+import { Table } from 'react-bootstrap';
 
-class StockPage extends React.Component {
+class StockTable extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      isFailed: false,
-      isLoading: true
+      stockData: props.stockData
     }
-  }
-  
-  componentDidMount() {
-    fetch(this.props.url)
-    .then((res) => Promise.all([res.status, res.json()]))
-    .then(([code, stockInfo]) => {
-      if (code === 200) {
-        this.setState({stockData: stockInfo, isFailed: false, isLoading: false})
-      } else {
-        this.setState({isFailed: true, isLoading: false})
-      }
-    });
-  }
+  }  
 
   render() {
-    if (this.state.isLoading) {
-      return (
-        <div>Loading...</div>
-      )
-    }
-
-    if (this.state.isFailed) {
-      return (
-        <div>Error during query stockpage!</div>
-      )
-    }
-
-    if (this.state.stockData === undefined || this.state.stockData === null)
-    {
-      return (
-        <div>Server returned no data</div>
-      )
-    }
-
     return (
-      <table>
-        <tr>
-          <th>Symbol</th>
-          <th>Price</th>
-          <th>Dividend Yield</th>
-        </tr>
+      <Table bordered>
+        <thead>
+          <tr>
+            <th>Symbol</th>
+            <th>Price</th>
+            <th>Dividend Yield</th>
+          </tr>
+        </thead>
+        <tbody>
         {this.state.stockData.map((stock) => {
           return (
-            <Stock stockData={stock}/>
+            <Stock key={stock.ticker} stockData={stock}/>
           )
         })}
-      </table>
+        </tbody>
+      </Table>
     )
   }
 }
@@ -131,4 +104,4 @@ function formatNumber(value) {
     return Number.parseFloat(value).toFixed(2)
 }
 
-export default StockPage
+export default StockTable
