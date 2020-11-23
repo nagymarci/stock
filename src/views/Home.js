@@ -17,11 +17,11 @@ const Home = () => {
   const [isLoading, setLoading] = useState(true);
   const [currentStocks, setStocks] = useState([]);
 
-  const { isAuthenticated, getAccessTokenSilently,user } = useAuth0();
+  const { isAuthenticated, getAccessTokenSilently,user, isLoading: isAuthLoading } = useAuth0();
 
   useEffect(() => {
-    console.log(isAuthenticated, user, isLoading)
-    if (isLoading) {
+    console.log(isAuthenticated, user, isLoading, isAuthLoading)
+    if (isLoading && !isAuthLoading) {
       getAllCalc(isAuthenticated, user, getAccessTokenSilently)
       .then(([code, stocks]) => {
         if (code === 200) {
@@ -34,11 +34,7 @@ const Home = () => {
         }
       });
     }
-  }, [isLoading, getAccessTokenSilently, isAuthenticated, user]);
-
-  useEffect(() => {
-    setLoading(true)
-  }, [isAuthenticated])
+  }, [isLoading, getAccessTokenSilently, isAuthenticated, user, isAuthLoading]);
 
   if (isLoading) {
     return (
