@@ -1,11 +1,9 @@
-import config from "./config.json";
-
 export async function getAllWatchlist(tokenFunction) {
   return tokenFunction({
-    audience: config.apiAudience,
+    audience: window.config.apiAudience,
     scope: "write:profiles"
   })
-  .then((token) => fetch(config.baseUrl + "/watchlist", {
+  .then((token) => fetch(window.config.baseUrl + "/watchlist", {
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -15,9 +13,9 @@ export async function getAllWatchlist(tokenFunction) {
 
 export async function deleteWatchlist(tokenFunction, id) {
   return tokenFunction({
-    audience: config.apiAudience,
+    audience: window.config.apiAudience,
     scope: "write:profiles"
-  }).then((token) => fetch(config.baseUrl + "/watchlist/" + id, {
+  }).then((token) => fetch(window.config.baseUrl + "/watchlist/" + id, {
       method: "delete", 
       headers: {
         Authorization: `Bearer ${token}`
@@ -28,9 +26,9 @@ export async function deleteWatchlist(tokenFunction, id) {
 
 export async function createWatchlist(tokenFunction, watchlist) {
   return tokenFunction({
-    audience: config.apiAudience,
+    audience: window.config.apiAudience,
     scope: "write:profiles"
-  }).then((token) => fetch(config.baseUrl + "/watchlist", {
+  }).then((token) => fetch(window.config.baseUrl + "/watchlist", {
       method: "POST",
       body: JSON.stringify(watchlist),
       headers: {
@@ -41,10 +39,10 @@ export async function createWatchlist(tokenFunction, watchlist) {
 
 export async function getCalculatedWatchlist(tokenFunction, id) {
   return tokenFunction({
-      audience: config.apiAudience,
+      audience: window.config.apiAudience,
       scope: "write:profiles"
     })
-  .then((token) => fetch(config.baseUrl + "/watchlist/" + id + "/calculated", {
+  .then((token) => fetch(window.config.baseUrl + "/watchlist/" + id + "/calculated", {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -54,10 +52,10 @@ export async function getCalculatedWatchlist(tokenFunction, id) {
 
 export async function getProfile(tokenFunction, userId) {
   return tokenFunction({
-    audience: config.apiAudience,
+    audience: window.config.apiAudience,
     scope: "write:profiles"
   })
-  .then((token) => fetch(config.baseUrl + "/userprofile/" + userId, {
+  .then((token) => fetch(window.config.baseUrl + "/userprofile/" + userId, {
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -67,10 +65,10 @@ export async function getProfile(tokenFunction, userId) {
 
 export async function saveProfile(tokenFunction, profile) {
   return tokenFunction({
-    audience: config.apiAudience,
+    audience: window.config.apiAudience,
     scope: "write:profiles"
   })
-  .then((token) => fetch(config.baseUrl + "/userprofile", {
+  .then((token) => fetch(window.config.baseUrl + "/userprofile", {
     method: "POST",
     body: JSON.stringify(profile),  
     headers: {
@@ -87,10 +85,10 @@ export async function saveProfile(tokenFunction, profile) {
 
 export async function getAllCalculatedAuth(tokenFunction, userId) {
   return tokenFunction({
-    audience: config.apiAudience,
+    audience: window.config.apiAudience,
     scope: "write:profiles"
   })
-  .then((token) => fetch(config.baseUrl + "/all/" + userId, {
+  .then((token) => fetch(window.config.baseUrl + "/all/" + userId, {
     method: "GET", 
     headers: {
       Authorization: `Bearer ${token}`
@@ -100,7 +98,7 @@ export async function getAllCalculatedAuth(tokenFunction, userId) {
 }
 
 export async function getAllCalculated() {
-  return fetch(config.baseUrl + "/all", {
+  return fetch(window.config.baseUrl + "/all", {
     method: "GET"
   })
   .then((res) => Promise.all([res.status, res.json()]));
