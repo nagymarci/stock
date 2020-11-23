@@ -18,6 +18,7 @@ class StockTable extends React.Component {
             <th>Symbol</th>
             <th>Price</th>
             <th>Dividend Yield</th>
+            <th>P/E</th>
           </tr>
         </thead>
         <tbody>
@@ -51,6 +52,7 @@ export class Stock extends React.Component {
           <td>{this.state.ticker}</td>
           <Price color={this.state.priceColor} price={this.state.price} optInPrice={this.state.optInPrice}/>
           <Dividend color={this.state.dividendColor} divYield={this.state.dividendYield} optInYield={this.state.optInYield}/>
+          <PeInfo color={this.state.pecolor} pe={this.state.currentPe} optInPe={this.state.optInPe} />
         </tr>
       )
     }
@@ -94,6 +96,28 @@ class Dividend extends React.Component {
     return (
       <td bgcolor={color} data-tip={optInText}>
         {formatNumber(this.state.divYield)}
+        <ReactTooltip />
+      </td>
+    )
+  }
+}
+
+class PeInfo extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      color: props.color,
+      currentPe: props.pe,
+      optInPe: props.optInPe
+    }
+  }
+
+  render() {
+    let optInText = "Opt-in pe: " + formatNumber(this.state.optInPe)
+    let color = this.state.color === "blank" ? "white" : this.state.color
+    return (
+      <td bgcolor={color} data-tip={optInText}>
+        {formatNumber(this.state.currentPe)}
         <ReactTooltip />
       </td>
     )
