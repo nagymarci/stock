@@ -2,6 +2,23 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Configuration
+The app expect configuration available in the `window.config` variable defined in `config.js`. This file is referenced from `index.html`
+to be available globally. 
+Format:
+```
+window.config = {
+  "baseUrl": "https://example.com",
+  "domain": "auth0-domain.example.com",
+  "clientId": "authClientId",
+  "audience": "audience",
+  "apiAudience": "apiAudience"
+}
+```
+
+### Docker
+One way to inject this file is to mount it with proper format to the `html` folder of the nginx container hosting this app.
+
 ## Available Scripts
 
 In the project directory, you can run:
